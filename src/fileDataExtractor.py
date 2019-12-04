@@ -44,6 +44,9 @@ class FileDataExtractor:
         for measIter in range(fileMeasDf.shape[0]):
             measTag = fileMeasDf.iloc[measIter, :].tag
             columnNumber = fileMeasDf.iloc[measIter, :].columnNumber
+            # check if dataDf has enough columns
+            if dataDf.shape[1] < columnNumber:
+                continue
             measDataVals = dataDf.iloc[:, columnNumber-1].values.tolist()
             for dataRowIter in range(len(measDataVals)):
                 dataRow = {
