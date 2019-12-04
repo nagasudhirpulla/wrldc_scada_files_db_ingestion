@@ -32,8 +32,13 @@ class FileDataExtractor:
         # extract timestamps from data DF
         timeColNum = fileInfoSeries.timeColumn
         timeFormat = fileInfoSeries.timeFormat
-        timeVals = [dt.datetime.strptime(t, timeFormat)
-                    for t in dataDf.iloc[:, timeColNum-1].values]
+        timeVals = []
+        try:
+            timeVals = [dt.datetime.strptime(t, timeFormat)
+                        for t in dataDf.iloc[:, timeColNum-1].values]
+        except Exception as err:
+            print(err)
+            return []
 
         # extract data for each measurement and append to array
         for measIter in range(fileMeasDf.shape[0]):
