@@ -22,5 +22,5 @@ class FileHandler:
             self.dataAdapter.connectToDb()
             self.dataAdapter.pushRows(dataRows)
             self.dataAdapter.disconnectDb()
-            print('{0} data push with {1} rows done at {2}'.format(
-                targetDt.strftime('%d-%m-%Y'), numRows, dt.datetime.now().strftime('%H:%M:%S')))
+            print('{0} {1} data push with {2} rows done at {3}'.format(
+                targetDt.strftime('%d-%m-%Y'), fileId, numRows, dt.datetime.now().strftime('%H:%M:%S')))
