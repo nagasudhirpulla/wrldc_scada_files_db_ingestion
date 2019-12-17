@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime as dt
 from masterDataFetcher import MasterDataFetcher
+import numpy as np
 
 
 class FileDataExtractor:
@@ -34,8 +35,15 @@ class FileDataExtractor:
         timeFormat = fileInfoSeries.timeFormat
         timeVals = []
         try:
-            timeVals = [dt.datetime.strptime(t, timeFormat)
-                        for t in dataDf.iloc[:, timeColNum-1].values]
+            if (fileInfoSeries.fileType == 'xlsx') and (dataDf.iloc[:, timeColNum-1].dtype != str) and (len(dataDf) == 1440):
+                # handling bug in scada excel dump files
+                timeVals = []
+                for timIter in range(len(dataDf)):
+                    timeVals.append(dt.datetime(
+                        targetDt.year, targetDt.month, targetDt.day) + dt.timedelta(minutes=timIter))
+            else:
+                timeVals = [dt.datetime.strptime(t, timeFormat)
+                            for t in dataDf.iloc[:, timeColNum-1].values]
         except Exception as err:
             print(err)
             return []
