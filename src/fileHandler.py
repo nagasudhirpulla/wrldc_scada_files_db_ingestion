@@ -16,8 +16,8 @@ class FileHandler:
             dataRows = self.dataExtractor.getDbRowsForFile(fileId, targetDt)
             numRows = len(dataRows)
             if numRows == 0:
-                print('{0} returned only zero rows - {1}'.format(
-                    targetDt.strftime('%d-%m-%Y'), dt.datetime.now().strftime('%H:%M:%S')))
+                print('{0} {1} returned only zero rows - {2}'.format(
+                    targetDt.strftime('%d-%m-%Y'), fileId, dt.datetime.now().strftime('%H:%M:%S')))
                 continue
             self.dataAdapter.connectToDb()
             self.dataAdapter.pushRows(dataRows)
