@@ -39,6 +39,10 @@ class MasterDataFetcher:
             elif fileType == 'xlsx':
                 dataDf = pd.read_excel(
                     fullfilePath, header=headerSkip, skipfooter=footerSkip)
+        else:
+            f= open("logs.txt","a+")
+            f.write('{0}: unable to find {1}\n'.format(dt.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), fullfilePath))
+            f.close()
         return dataDf
 
     def getFileMeasInfoDf(self, fileId):
