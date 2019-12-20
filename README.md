@@ -3,6 +3,8 @@
 net use s: \\hostip\scada\Reports /user:hostusername hostpassworrd /persistent:Yes
 ```
 
+While running a task that uses a mapped drive, make sure that task scheduler option should be 'Run only when user is logged on'
+
 Using a persistent network drive is not advisable - https://stackoverflow.com/questions/24428597/task-scheduler-access-non-local-drives-while-running-task-not-logged-in
 
 Hence on system log on, run a task as shown below
