@@ -2,10 +2,10 @@ import datetime as dt
 from fileHandler import FileHandler
 
 # input variables
-fileIds = ['state_gen']
-startDt = dt.datetime(2019, 11, 1)
+fileIds = ['gen_sch_act', 'sch_act_ui', 'state_gen']
+startDt = dt.datetime(2019, 6, 1)
 # startDt = dt.datetime.now() - dt.timedelta(days=1)
-endDt = dt.datetime(2019, 11, 3)
+endDt = dt.datetime(2019, 12, 19)
 # endDt = dt.datetime.now() - dt.timedelta(days=1)
 fileHandler = FileHandler()
 
