@@ -5,7 +5,7 @@ import os
 from glob import glob
 
 
-class chunkFileHandler:
+class ChunkFilesHandler:
     dataAdapter = ScadaDbAdapter()
 
     def readDbRowsFromFile(self, filePath):
@@ -18,7 +18,7 @@ class chunkFileHandler:
         if dataDf.shape[1] != 3:
             return dataRows
 
-        for rowIter in dataDf.shape[0]:
+        for rowIter in range(dataDf.shape[0]):
             idStr = dataDf.iloc[rowIter, 0]
             timeStr = dataDf.iloc[rowIter, 1]
             valStr = dataDf.iloc[rowIter, 2]
@@ -26,7 +26,7 @@ class chunkFileHandler:
                 {
                     'meas_time': dt.datetime.strptime(timeStr[:-4], '%d_%m_%Y_%H_%M_%S'),
                     'meas_tag': idStr,
-                    'meas_val': valStr
+                    'meas_val': str(valStr)
                 })
         return dataRows
 
@@ -54,5 +54,5 @@ class chunkFileHandler:
             print(filePath)
             isSuccess = self.pushFileDataToDb(filePath)
             if isSuccess == True:
-                # delete the file
+                # delete the file after processing
                 os.remove(filePath)
