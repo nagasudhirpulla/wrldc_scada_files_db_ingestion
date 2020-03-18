@@ -5,7 +5,7 @@ import sys
 chunksFolder = ''
 for argIter in range(len(sys.argv)-1):
     argFlag = sys.argv[argIter]
-    print(argFlag)
+    # print(argFlag)
     if argFlag == "--chunksFolder":
         chunksFolder = sys.argv[argIter+1]
 
