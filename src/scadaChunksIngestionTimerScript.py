@@ -9,5 +9,6 @@ for argIter in range(len(sys.argv)-1):
     if argFlag == "--chunksFolder":
         chunksFolder = sys.argv[argIter+1]
 
+print('Ingesting files from folder - {0}'.format(chunksFolder))
 handler = ChunkFilesHandler()
 handler.pushFolderFilesToDb(chunksFolder)
