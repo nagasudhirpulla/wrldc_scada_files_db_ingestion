@@ -27,7 +27,7 @@ class NodeStatusDbAdapter:
                 dataRow = dataRows[insRowIter]
 
                 dataInsertionTuple = (dt.datetime.strftime(dataRow['data_time'], '%Y-%m-%d %H:%M:%S'), dataRow['name'],
-                                      dataRow['ip'], dataRow['status'])
+                                      dataRow['ip'], str(dataRow['status']))
                 dataInsertionTuples.append(dataInsertionTuple)
 
             # prepare sql for insertion and execute
@@ -66,7 +66,7 @@ class NodeStatusDbAdapter:
                 dataRow = dataRows[insRowIter]
 
                 dataInsertionTuple = (dt.datetime.strftime(dataRow['data_time'], '%Y-%m-%d %H:%M:%S'), dataRow['name'],
-                                      dataRow['status'])
+                                      str(dataRow['status']))
                 dataInsertionTuples.append(dataInsertionTuple)
 
             # prepare sql for insertion and execute
@@ -111,7 +111,7 @@ class NodeStatusDbAdapter:
             records.columns = ['name', 'data_time', 'status']
         except (Exception, psycopg2.Error) as error:
             print("Error while fetching data from PostgreSQL", error)
-            records = pd.DataFrame()
+            records = pd.DataFrame(columns = ['name', 'data_time', 'status'])
         finally:
             cur.close()
             return records

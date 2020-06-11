@@ -22,13 +22,13 @@ class StatusFilesHandler:
             timeStr = dataDf['data_time'].iloc[rowIter]
             ipStr = dataDf['ip'].iloc[rowIter]
             nameStr = dataDf['name'].iloc[rowIter]
-            statusStr = dataDf['status'].iloc[rowIter]
+            statusVal = dataDf['status'].iloc[rowIter]
             dataRows.append(
                 {
                     'data_time': dt.datetime.strptime(timeStr, '%d_%m_%Y_%H_%M_%S'),
                     'name': nameStr,
                     'ip': ipStr,
-                    'status': str(statusStr)
+                    'status': statusVal
                 })
         return dataRows
 
@@ -72,8 +72,8 @@ class StatusFilesHandler:
         for nRow in newRows:
             # get the dbStatus row with the same name as nRow but a different status
             nodeName = nRow['name']
-            filteredDf = dbStatus[(dbStatus['name'] == nodeName) and (
-                dbStatus['status'] != nRow['status'])]
-            if not(filteredDf.shape[0] == 0):
+            filteredDf = dbStatus[(dbStatus['name'] == nodeName) & (
+                dbStatus['status'] == nRow['status'])]
+            if filteredDf.shape[0] == 0:
                 diffRows.append(nRow)
         return diffRows
