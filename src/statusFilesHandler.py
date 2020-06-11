@@ -41,7 +41,13 @@ class StatusFilesHandler:
                 filePath, dt.datetime.now().strftime('%H:%M:%S')))
             return False
         self.dataAdapter.connectToDb()
+        # push node status rows to real time db
         isSuccess = self.dataAdapter.pushRows(dataRows)
+        # get the diff of live nodes status and the latest hist data
+        latestHistStatusDf = self.dataAdapter.fetchLatestNodeHistory()
+        diffHistRows = self.getDiffNodeStatusRows(latestHistStatusDf, dataRows)
+        # push hist rows to db
+        self.dataAdapter.pushHistRows(diffHistRows)
         self.dataAdapter.disconnectDb()
         print('{0} data push with {1} rows done at {2}'.format(
             filePath, numRows, dt.datetime.now().strftime('%H:%M:%S')))
@@ -58,3 +64,16 @@ class StatusFilesHandler:
             if isSuccess == True:
                 # delete the file after processing
                 os.remove(filePath)
+
+    def getDiffNodeStatusRows(self, dbStatus, newRows):
+        # attributes of newRows objects = ip, status, name, data_time
+        # column names of dbStatus dataFrame = 'name', 'data_time', 'status'
+        diffRows = []
+        for nRow in newRows:
+            # get the dbStatus row with the same name as nRow but a different status
+            nodeName = nRow['name']
+            filteredDf = dbStatus[(dbStatus['name'] == nodeName) and (
+                dbStatus['status'] != nRow['status'])]
+            if not(filteredDf.shape[0] == 0):
+                diffRows.append(nRow)
+        return diffRows
