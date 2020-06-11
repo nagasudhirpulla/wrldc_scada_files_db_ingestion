@@ -30,7 +30,7 @@ class NodeStatusDbAdapter:
                 dataInsertionTuples.append(dataInsertionTuple)
 
             # prepare sql for insertion and execute
-            dataText = ','.join(cur.mogrify('(%s,%s,%s)', row).decode(
+            dataText = ','.join(cur.mogrify('(%s,%s,%s,%s)', row).decode(
                 "utf-8") for row in dataInsertionTuples)
             sqlTxt = 'INSERT INTO public.real_node_status(\
         	data_time, name, ip, status)\
