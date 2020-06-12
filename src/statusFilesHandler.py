@@ -3,7 +3,6 @@ import datetime as dt
 from nodeStatusDbAdapter import NodeStatusDbAdapter
 import os
 from glob import glob
-import numpy as np
 
 
 class StatusFilesHandler:
@@ -86,17 +85,18 @@ class StatusFilesHandler:
         histDiffRows = []
 
         for rowIter in range(joinedDf.shape[0]):
-            nodeName = liveNodeStatusDf['name'].iloc[rowIter]
+            nodeName = joinedDf['name'].iloc[rowIter]
             lastToggledAt = joinedDf['last_toggled_at'].iloc[rowIter]
             incomingTime = joinedDf['data_time'].iloc[rowIter]
-            lastToggledNew = incomingTime if np.isnan(
+            lastToggledNew = incomingTime if pd.isnull(
                 lastToggledAt) else lastToggledAt
-            liveStatus = liveNodeStatusDf['status_2'].iloc[rowIter]
-            incomingStatus = liveNodeStatusDf['status'].iloc[rowIter]
-            if np.isnan(liveStatus) or (liveStatus != incomingStatus):
+            liveStatus = joinedDf['status_2'].iloc[rowIter]
+            incomingStatus = joinedDf['status'].iloc[rowIter]
+            nodeIp = joinedDf['ip'].iloc[rowIter]
+            if pd.isnull(liveStatus) or (liveStatus != incomingStatus):
                 lastToggledNew = incomingTime
                 histDiffRows.append(
                     {'name': nodeName, 'status': incomingStatus, 'data_time': lastToggledNew})
             liveDiffRows.append({'name': nodeName, 'status': incomingStatus,
-                                 'data_time': incomingTime, 'last_toggled_at': lastToggledNew})
+                                 'data_time': incomingTime, 'last_toggled_at': lastToggledNew, 'ip':nodeIp})
         return (liveDiffRows, histDiffRows)
