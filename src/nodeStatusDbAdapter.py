@@ -88,13 +88,14 @@ class NodeStatusDbAdapter:
     def fetchLiveNodeStatus(self):
         cur = self.conn.cursor()
         try:
-            sqlTxt = 'select name, data_time, status FROM public.real_node_status'
+            sqlTxt = 'select name, status, data_time, last_toggled_at FROM public.real_node_status'
             cur.execute(sqlTxt)
             records = cur.fetchall()
-            records = pd.DataFrame.from_records(records)
+            records = pd.DataFrame.from_records(
+                records, columns=['name', 'status', 'data_time', 'last_toggled_at'])
         except (Exception, psycopg2.Error) as error:
             print("Error while fetching data from PostgreSQL", error)
-            records = pd.DataFrame()
+            records = pd.DataFrame(columns=['name', 'status', 'data_time', 'last_toggled_at'])
         finally:
             cur.close()
             return records
@@ -111,7 +112,7 @@ class NodeStatusDbAdapter:
             records.columns = ['name', 'data_time', 'status']
         except (Exception, psycopg2.Error) as error:
             print("Error while fetching data from PostgreSQL", error)
-            records = pd.DataFrame(columns = ['name', 'data_time', 'status'])
+            records = pd.DataFrame(columns=['name', 'data_time', 'status'])
         finally:
             cur.close()
             return records
