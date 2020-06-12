@@ -7,7 +7,7 @@ import pandas as pd
 class NodeStatusDbAdapter:
     conn = None
 
-    # object attributes = data_time,ip,name,status
+    # object attributes = data_time,ip,name,status,last_toggled_at
     # schedules table columns = data_time,ip,name,status
     def pushRows(self, dataRows):
         cur = self.conn.cursor()
@@ -26,17 +26,21 @@ class NodeStatusDbAdapter:
             for insRowIter in range(rowIter, iteratorEndVal):
                 dataRow = dataRows[insRowIter]
 
-                dataInsertionTuple = (dt.datetime.strftime(dataRow['data_time'], '%Y-%m-%d %H:%M:%S'), dataRow['name'],
-                                      dataRow['ip'], str(dataRow['status']))
+                dataInsertionTuple = (dt.datetime.strftime(dataRow['data_time'], '%Y-%m-%d %H:%M:%S'),
+                                      dt.datetime.strftime(
+                                          dataRow['last_toggled_at'], '%Y-%m-%d %H:%M:%S'),
+                                      dataRow['name'], dataRow['ip'], str(dataRow['status']))
                 dataInsertionTuples.append(dataInsertionTuple)
 
             # prepare sql for insertion and execute
-            dataText = ','.join(cur.mogrify('(%s,%s,%s,%s)', row).decode(
+            dataText = ','.join(cur.mogrify('(%s,%s,%s,%s,%s)', row).decode(
                 "utf-8") for row in dataInsertionTuples)
             sqlTxt = 'INSERT INTO public.real_node_status(\
-        	data_time, name, ip, status)\
+        	data_time, last_toggled_at, name, ip, status)\
         	VALUES {0} on conflict (name) \
-            do update set status = excluded.status, data_time=excluded.data_time'.format(dataText)
+            do update set status = excluded.status, \
+            last_toggled_at=excluded.last_toggled_at, \
+            ip=excluded.ip, data_time=excluded.data_time'.format(dataText)
             cur.execute(sqlTxt)
             self.conn.commit()
 
@@ -46,8 +50,8 @@ class NodeStatusDbAdapter:
         cur.close()
         return True
 
-    # object attributes = data_time,ip,name,status
-    # table columns = data_time,ip,name,status
+    # object attributes = data_time,name,status
+    # table columns = data_time,name,status
     def pushHistRows(self, dataRows):
         cur = self.conn.cursor()
         # we will commit in multiples of 500 rows
@@ -95,7 +99,8 @@ class NodeStatusDbAdapter:
                 records, columns=['name', 'status', 'data_time', 'last_toggled_at'])
         except (Exception, psycopg2.Error) as error:
             print("Error while fetching data from PostgreSQL", error)
-            records = pd.DataFrame(columns=['name', 'status', 'data_time', 'last_toggled_at'])
+            records = pd.DataFrame(
+                columns=['name', 'status', 'data_time', 'last_toggled_at'])
         finally:
             cur.close()
             return records

@@ -3,6 +3,7 @@ import datetime as dt
 from nodeStatusDbAdapter import NodeStatusDbAdapter
 import os
 from glob import glob
+import numpy as np
 
 
 class StatusFilesHandler:
@@ -41,13 +42,17 @@ class StatusFilesHandler:
                 filePath, dt.datetime.now().strftime('%H:%M:%S')))
             return False
         self.dataAdapter.connectToDb()
-        # push node status rows to real time db
-        isSuccess = self.dataAdapter.pushRows(dataRows)
+        
         # get the diff of live nodes status and the latest hist data
-        latestHistStatusDf = self.dataAdapter.fetchLatestNodeHistory()
-        diffHistRows = self.getDiffNodeStatusRows(latestHistStatusDf, dataRows)
+        liveNodeStatusDf = self.dataAdapter.fetchLiveNodeStatus()
+        (liveDiffRows, histDiffRows) = self.getDiffNodeStatusRows(
+            liveNodeStatusDf, dataRows)
+        
+        # push node status rows to real time db
+        isSuccess = self.dataAdapter.pushRows(liveDiffRows)
+        
         # push hist rows to db
-        self.dataAdapter.pushHistRows(diffHistRows)
+        isSuccess = self.dataAdapter.pushHistRows(histDiffRows)
         self.dataAdapter.disconnectDb()
         print('{0} data push with {1} rows done at {2}'.format(
             filePath, numRows, dt.datetime.now().strftime('%H:%M:%S')))
@@ -65,15 +70,33 @@ class StatusFilesHandler:
                 # delete the file after processing
                 os.remove(filePath)
 
-    def getDiffNodeStatusRows(self, dbStatus, newRows):
+    def getDiffNodeStatusRows(self, liveNodeStatusDf, newRows):
+        if len(newRows) == 0:
+            return ([], [])
         # attributes of newRows objects = ip, status, name, data_time
-        # column names of dbStatus dataFrame = 'name', 'data_time', 'status'
-        diffRows = []
-        for nRow in newRows:
-            # get the dbStatus row with the same name as nRow but a different status
-            nodeName = nRow['name']
-            filteredDf = dbStatus[(dbStatus['name'] == nodeName) & (
-                dbStatus['status'] == nRow['status'])]
-            if filteredDf.shape[0] == 0:
-                diffRows.append(nRow)
-        return diffRows
+        # column names of live node status dataFrame = name, status, data_time, last_toggled_at
+
+        # create new df from incoming rows
+        incomingDf = pd.DataFrame(newRows)
+
+        joinedDf = incomingDf.merge(
+            liveNodeStatusDf, on='name', how='left', suffixes=('', '_2'))
+        # initialize the result lists
+        liveDiffRows = []
+        histDiffRows = []
+
+        for rowIter in range(joinedDf.shape[0]):
+            nodeName = liveNodeStatusDf['name'].iloc[rowIter]
+            lastToggledAt = joinedDf['last_toggled_at'].iloc[rowIter]
+            incomingTime = joinedDf['data_time'].iloc[rowIter]
+            lastToggledNew = incomingTime if np.isnan(
+                lastToggledAt) else lastToggledAt
+            liveStatus = liveNodeStatusDf['status_2'].iloc[rowIter]
+            incomingStatus = liveNodeStatusDf['status'].iloc[rowIter]
+            if np.isnan(liveStatus) or (liveStatus != incomingStatus):
+                lastToggledNew = incomingTime
+                histDiffRows.append(
+                    {'name': nodeName, 'status': incomingStatus, 'data_time': lastToggledNew})
+            liveDiffRows.append({'name': nodeName, 'status': incomingStatus,
+                                 'data_time': incomingTime, 'last_toggled_at': lastToggledNew})
+        return (liveDiffRows, histDiffRows)
