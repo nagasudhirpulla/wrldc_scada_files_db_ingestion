@@ -13,7 +13,11 @@ class ChunkFilesHandler:
         if not(os.path.exists(filePath)):
             return dataRows
 
-        dataDf = pd.read_csv(filePath, header=None)
+        try:
+            # handling the empty file scenario
+            dataDf = pd.read_csv(filePath, header=None)
+        except:
+            return []
 
         if dataDf.shape[1] != 3:
             return dataRows
@@ -49,7 +53,8 @@ class ChunkFilesHandler:
         if not(os.path.isdir(folderPath)):
             return
         fNames = glob(os.path.join(folderPath, '*.csv'))
-        fNames.sort(key=os.path.getmtime)
+        # not used to reduce time complexity
+        # fNames.sort(key=os.path.getmtime)
         for filePath in fNames:
             print(filePath)
             isSuccess = self.pushFileDataToDb(filePath)
