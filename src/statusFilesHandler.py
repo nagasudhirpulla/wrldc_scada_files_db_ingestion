@@ -13,7 +13,10 @@ class StatusFilesHandler:
         if not(os.path.exists(filePath)):
             return dataRows
 
-        dataDf = pd.read_csv(filePath)
+        try:
+            dataDf = pd.read_csv(filePath)
+        except:
+            return dataRows
 
         if dataDf.shape[0] == 0 or not(set(['data_time', 'ip', 'name', 'status']).issubset(set(dataDf.columns.tolist()))):
             return dataRows
@@ -41,15 +44,15 @@ class StatusFilesHandler:
                 filePath, dt.datetime.now().strftime('%H:%M:%S')))
             return False
         self.dataAdapter.connectToDb()
-        
+
         # get the diff of live nodes status and the latest hist data
         liveNodeStatusDf = self.dataAdapter.fetchLiveNodeStatus()
         (liveDiffRows, histDiffRows) = self.getDiffNodeStatusRows(
             liveNodeStatusDf, dataRows)
-        
+
         # push node status rows to real time db
         isSuccess = self.dataAdapter.pushRows(liveDiffRows)
-        
+
         # push hist rows to db
         isSuccess = self.dataAdapter.pushHistRows(histDiffRows)
         self.dataAdapter.disconnectDb()
@@ -98,5 +101,5 @@ class StatusFilesHandler:
                 histDiffRows.append(
                     {'name': nodeName, 'status': incomingStatus, 'data_time': lastToggledNew})
             liveDiffRows.append({'name': nodeName, 'status': incomingStatus,
-                                 'data_time': incomingTime, 'last_toggled_at': lastToggledNew, 'ip':nodeIp})
+                                 'data_time': incomingTime, 'last_toggled_at': lastToggledNew, 'ip': nodeIp})
         return (liveDiffRows, histDiffRows)
