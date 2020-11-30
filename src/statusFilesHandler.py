@@ -3,21 +3,13 @@ import datetime as dt
 from nodeStatusDbAdapter import NodeStatusDbAdapter
 import os
 from glob import glob
+from io import StringIO
 
 
 class StatusFilesHandler:
     dataAdapter = NodeStatusDbAdapter()
 
-    def readDbRowsFromFile(self, filePath):
-        dataRows = []
-        if not(os.path.exists(filePath)):
-            return dataRows
-
-        try:
-            dataDf = pd.read_csv(filePath)
-        except:
-            return dataRows
-
+    def readDbRowsFromDf(self, dataDf):
         if dataDf.shape[0] == 0 or not(set(['data_time', 'ip', 'name', 'status']).issubset(set(dataDf.columns.tolist()))):
             return dataRows
 
@@ -35,9 +27,28 @@ class StatusFilesHandler:
                 })
         return dataRows
 
+    def pushTextDataToDb(self, txt):
+        dataRows = []
+        try:
+            dataDf = pd.read_csv(StringIO(txt))
+            dataRows = self.readDbRowsFromDf(dataDf)
+        except:
+            dataRows = []
+        self.pushDataRowsToDb(dataRows)
+
     def pushFileDataToDb(self, filePath):
+        dataRows = []
+        if not(os.path.exists(filePath)):
+            return dataRows
+        try:
+            dataDf = pd.read_csv(filePath)
+            dataRows = self.readDbRowsFromDf(dataDf)
+        except:
+            dataRows = []
+        self.pushDataRowsToDb(dataRows)
+
+    def pushDataRowsToDb(self, dataRows):
         # read file lines
-        dataRows = self.readDbRowsFromFile(filePath)
         numRows = len(dataRows)
         if numRows == 0:
             print('{0} returned only zero rows - {1}'.format(
