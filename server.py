@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from src.nodeStatusService.decorators import validate_bearer_jwt
 app = Flask(__name__)
 
@@ -7,9 +7,15 @@ app = Flask(__name__)
 def index():
     return 'nodes ping status management service'
 
+
 @app.route('/createNodesPingStatus', methods=['POST'])
-@validate_bearer_jwt
+# @validate_bearer_jwt
 def createNodesPingStatus():
+    # https://stackoverflow.com/a/23889195
+    # send post request with requests module - https://stackoverflow.com/a/35535240
+    reqData = request.get_json()
+    statusList = reqData['statusList']
+    # print(statusList)
     return 'success'
 
 
