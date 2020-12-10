@@ -1,5 +1,5 @@
 import datetime as dt
-from fileHandler import FileHandler
+from src.fileHandler import FileHandler
 
 # input variables
 fileIds = ['volt', 'ict', 'gen_sch_act', 'sch_act_ui', 'state_gen', 'demand']

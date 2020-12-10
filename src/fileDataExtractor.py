@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime as dt
-from masterDataFetcher import MasterDataFetcher
+from src.masterDataFetcher import MasterDataFetcher
 import numpy as np
 
 

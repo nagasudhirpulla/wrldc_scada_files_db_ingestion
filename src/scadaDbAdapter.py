@@ -1,5 +1,5 @@
 import psycopg2
-from appConf import getConf
+from src.appConf import getConf
 import datetime as dt
 
 class ScadaDbAdapter:

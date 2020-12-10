@@ -1,4 +1,4 @@
 {
     "idSrvDiscoUrl": "https://abc.com/.well-known/openid-configuration",
-    "accessTokenFetchAudience": "abcd"
+    "accessTokenValidationAudience": "abcd"
 }

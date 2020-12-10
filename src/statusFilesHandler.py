@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime as dt
-from nodeStatusDbAdapter import NodeStatusDbAdapter
+from src.nodeStatusDbAdapter import NodeStatusDbAdapter
 import os
 from glob import glob
 from io import StringIO

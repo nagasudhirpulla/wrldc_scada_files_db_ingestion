@@ -1,4 +1,4 @@
-from statusFilesHandler import StatusFilesHandler
+from src.statusFilesHandler import StatusFilesHandler
 import sys
 
 # resolve the ip nodes status files folder

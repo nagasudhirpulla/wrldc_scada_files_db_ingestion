@@ -1,7 +1,7 @@
 import pandas as pd
 import datetime as dt
-from fileDataExtractor import FileDataExtractor
-from scadaDbAdapter import ScadaDbAdapter
+from src.fileDataExtractor import FileDataExtractor
+from src.scadaDbAdapter import ScadaDbAdapter
 
 
 class FileHandler:

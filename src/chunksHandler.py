@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime as dt
-from scadaDbAdapter import ScadaDbAdapter
+from src.scadaDbAdapter import ScadaDbAdapter
 import os
 from glob import glob
 

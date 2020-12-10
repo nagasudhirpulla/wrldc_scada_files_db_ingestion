@@ -1,4 +1,4 @@
-from chunksHandler import ChunkFilesHandler
+from src.chunksHandler import ChunkFilesHandler
 import sys
 
 # resolve the chunks folder
