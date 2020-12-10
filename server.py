@@ -9,7 +9,7 @@ def index():
 
 
 @app.route('/createNodesPingStatus', methods=['POST'])
-# @validate_bearer_jwt
+@validate_bearer_jwt
 def createNodesPingStatus():
     # https://stackoverflow.com/a/23889195
     # send post request with requests module - https://stackoverflow.com/a/35535240
