@@ -2,13 +2,23 @@ from flask import Flask, request
 from src.nodeStatusService.decorators import validate_bearer_jwt
 from src.appConf import getJsonConfig
 from src.statusFilesHandler import StatusFilesHandler
-import werkzeug
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.exceptions import NotFound, InternalServerError
+from typing import Any, cast
+from waitress import serve
 
 app = Flask(__name__)
 
 jsonConf = getJsonConfig()
 idSrvDiscoUrl = jsonConf['idSrvDiscoUrl']
 accessTokenValidationAudience = jsonConf['accessTokenValidationAudience']
+
+appPrefix = jsonConf['appPrefix']
+serverMode = jsonConf['serverMode']
+serverHost = jsonConf['serverHost']
+serverPort = jsonConf['serverPort']
+
+app.config['SECRET_KEY'] = jsonConf['serverSecret']
 
 
 @app.route('/')
@@ -30,7 +40,7 @@ def createNodesPingStatus():
     if len(statusList) == 0:
         return {'message': 'success'}
     if set('ip,status,name,data_time'.split(',')).issubset(statusList[0].keys()):
-        raise werkzeug.exceptions.InternalServerError()
+        raise InternalServerError()
 
     handler = StatusFilesHandler()
     handler.pushDataRowsToDb(statusList)
@@ -38,5 +48,17 @@ def createNodesPingStatus():
     return 'success'
 
 
+hostedApp = Flask(__name__)
+hostedApp.config['SECRET_KEY'] = jsonConf['serverSecret']
+
+cast(Any, hostedApp).wsgi_app = DispatcherMiddleware(NotFound(), {
+    appPrefix: app
+})
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    if serverMode.lower() == 'd':
+        hostedApp.run(host=serverHost, port=int(
+            serverPort), debug=True)
+    else:
+        serve(app, host=serverHost, port=int(
+            serverPort), url_prefix=appPrefix, threads=1)

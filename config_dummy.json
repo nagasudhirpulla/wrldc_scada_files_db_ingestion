@@ -1,4 +1,9 @@
 {
     "idSrvDiscoUrl": "https://abc.com/.well-known/openid-configuration",
-    "accessTokenValidationAudience": "abcd"
+    "accessTokenValidationAudience": "abcd",
+    "serverSecret": "",
+    "appPrefix": "appPrefix",
+    "serverMode": "d",
+    "serverHost": "localhost",
+    "serverPort": 80
 }
