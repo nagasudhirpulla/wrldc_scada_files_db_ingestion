@@ -13,6 +13,7 @@ class StatusFilesHandler:
         if dataDf.shape[0] == 0 or not(set(['data_time', 'ip', 'name', 'status']).issubset(set(dataDf.columns.tolist()))):
             return dataRows
 
+        dataRows = []
         for rowIter in range(dataDf.shape[0]):
             timeStr = dataDf['data_time'].iloc[rowIter]
             ipStr = dataDf['ip'].iloc[rowIter]
@@ -28,7 +29,6 @@ class StatusFilesHandler:
         return dataRows
 
     def pushTextDataToDb(self, txt):
-        dataRows = []
         try:
             dataDf = pd.read_csv(StringIO(txt))
             dataRows = self.readDbRowsFromDf(dataDf)
