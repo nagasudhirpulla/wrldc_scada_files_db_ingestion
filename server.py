@@ -39,7 +39,7 @@ def createNodesPingStatus():
     # check the structure of rows in the status list
     if len(statusList) == 0:
         return {'message': 'success'}
-    if set('ip,status,name,data_time'.split(',')).issubset(set(statusList[0].keys())):
+    if not set('ip,status,name,data_time'.split(',')).issubset(set(statusList[0].keys())):
         raise InternalServerError(description="All required keys not present in the first payload object")
 
     handler = StatusFilesHandler()
