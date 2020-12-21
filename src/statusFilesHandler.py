@@ -47,7 +47,7 @@ class StatusFilesHandler:
             print(err)
             dataRows = []
         print("pushing data of file {0}".format(filePath))
-        self.pushDataRowsToDb(dataRows)
+        return self.pushDataRowsToDb(dataRows)
 
     def pushDataRowsToDb(self, dataRows):
         # read file lines
