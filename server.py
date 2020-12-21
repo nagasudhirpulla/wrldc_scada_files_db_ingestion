@@ -40,9 +40,14 @@ def createNodesPingStatus():
     if len(statusList) == 0:
         return {'message': 'success'}
     if not set('ip,status,name,data_time'.split(',')).issubset(set(statusList[0].keys())):
-        raise InternalServerError(description="All required keys not present in the first payload object")
+        raise InternalServerError(
+            description="All required keys not present in the first payload object")
 
     handler = StatusFilesHandler()
+    # convert string to datetime objects before insertion
+    for rIter in range(len(statusList)):
+        statusList[rIter]['data_time'] = dt.datetime.strptime(
+            statusList[rIter]['data_time'], '%d_%m_%Y_%H_%M_%S')
     handler.pushDataRowsToDb(statusList)
     # print(statusList)
     return 'success'
