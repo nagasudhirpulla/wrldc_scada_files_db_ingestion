@@ -43,7 +43,7 @@ class StatusFilesHandler:
         try:
             dataDf = pd.read_csv(filePath)
             dataRows = self.readDbRowsFromDf(dataDf)
-        except:
+        except Exception as err:
             dataRows = []
         print("pushing data of file {0}".format(filePath))
         self.pushDataRowsToDb(dataRows)
