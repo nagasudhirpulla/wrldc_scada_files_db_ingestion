@@ -45,6 +45,7 @@ class StatusFilesHandler:
             dataRows = self.readDbRowsFromDf(dataDf)
         except:
             dataRows = []
+        print("pushing data of file {0}".format(filePath))
         self.pushDataRowsToDb(dataRows)
 
     def pushDataRowsToDb(self, dataRows):
@@ -67,8 +68,8 @@ class StatusFilesHandler:
         # push hist rows to db
         isSuccess = self.dataAdapter.pushHistRows(histDiffRows)
         self.dataAdapter.disconnectDb()
-        print('{0} data push with {1} rows done at {2}'.format(
-            filePath, numRows, dt.datetime.now().strftime('%H:%M:%S')))
+        print('data push with {0} rows done at {1}'.format(
+            numRows, dt.datetime.now().strftime('%H:%M:%S')))
         return isSuccess
 
     def pushFolderFilesToDb(self, folderPath):
