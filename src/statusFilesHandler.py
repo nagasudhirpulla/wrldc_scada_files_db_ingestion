@@ -52,8 +52,8 @@ class StatusFilesHandler:
         # read file lines
         numRows = len(dataRows)
         if numRows == 0:
-            print('{0} returned only zero rows - {1}'.format(
-                filePath, dt.datetime.now().strftime('%H:%M:%S')))
+            print(
+                'returned only zero rows - {0}'.format(dt.datetime.now().strftime('%H:%M:%S')))
             return False
         self.dataAdapter.connectToDb()
 
