@@ -27,7 +27,7 @@ six==1.15.0
 toml==0.10.2
 typed-ast==1.4.1
 typing-extensions==3.7.4.3
-urllib3==1.26.2
+urllib3==1.26.3
 waitress==1.4.4
 Werkzeug==1.0.1
 xlrd==2.0.1
