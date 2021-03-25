@@ -26,11 +26,14 @@ class ChunkFilesHandler:
             idStr = dataDf.iloc[rowIter, 0]
             timeStr = dataDf.iloc[rowIter, 1]
             valStr = dataDf.iloc[rowIter, 2]
+            if isinstance(valStr, float):
+                valStr = valStr.round(5)
+            valStr = str(valStr)
             dataRows.append(
                 {
                     'meas_time': dt.datetime.strptime(timeStr[:-4], '%d_%m_%Y_%H_%M_%S'),
                     'meas_tag': idStr,
-                    'meas_val': str(valStr)
+                    'meas_val': valStr
                 })
         return dataRows
 
